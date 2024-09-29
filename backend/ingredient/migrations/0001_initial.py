@@ -7,19 +7,41 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Тэги для группирования рецептов', max_length=32, verbose_name='Tag')),
-                ('slug', models.SlugField(help_text='Slug тэга', max_length=32, unique=True, verbose_name='Slug')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Тэги для группирования рецептов",
+                        max_length=32,
+                        verbose_name="Tag",
+                    ),
+                ),
+                (
+                    "slug",
+                    models.SlugField(
+                        help_text="Slug тэга",
+                        max_length=32,
+                        unique=True,
+                        verbose_name="Slug",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('slug',),
+                "ordering": ("slug",),
             },
         ),
     ]

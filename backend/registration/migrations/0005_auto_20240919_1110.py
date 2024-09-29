@@ -6,16 +6,23 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0004_auto_20240919_0634'),
+        ("registration", "0004_auto_20240919_0634"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='baseuser',
-            options={'ordering': ('date_joined',), 'verbose_name': 'Пользователь', 'verbose_name_plural': 'Пользователи'},
+            name="baseuser",
+            options={
+                "ordering": ("date_joined",),
+                "verbose_name": "Пользователь",
+                "verbose_name_plural": "Пользователи",
+            },
         ),
         migrations.AlterModelOptions(
-            name='usersubscription',
-            options={'verbose_name': 'Подписки пользователя', 'verbose_name_plural': 'Подписки пользователя'},
+            name="usersubscription",
+            options={
+                "verbose_name": "Подписки пользователя",
+                "verbose_name_plural": "Подписки пользователя",
+            },
         ),
     ]

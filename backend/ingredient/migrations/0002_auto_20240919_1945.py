@@ -6,30 +6,60 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ingredient', '0001_initial'),
+        ("ingredient", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Ingredient',
+            name="Ingredient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Название ингредиента', max_length=128, verbose_name='Name')),
-                ('measurement_unit', models.CharField(help_text='Мера измерения', max_length=64, verbose_name='Measure')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Название ингредиента",
+                        max_length=128,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "measurement_unit",
+                    models.CharField(
+                        help_text="Мера измерения",
+                        max_length=64,
+                        verbose_name="Measure",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Ингредиент',
-                'verbose_name_plural': 'Ингредиенты',
-                'ordering': ('name',),
+                "verbose_name": "Ингредиент",
+                "verbose_name_plural": "Ингредиенты",
+                "ordering": ("name",),
             },
         ),
         migrations.AlterModelOptions(
-            name='tag',
-            options={'ordering': ('slug',), 'verbose_name': 'Tag', 'verbose_name_plural': 'Tags'},
+            name="tag",
+            options={
+                "ordering": ("slug",),
+                "verbose_name": "Tag",
+                "verbose_name_plural": "Tags",
+            },
         ),
         migrations.AlterField(
-            model_name='tag',
-            name='name',
-            field=models.CharField(help_text='Тэги для группирования рецептов', max_length=32, verbose_name='Name'),
+            model_name="tag",
+            name="name",
+            field=models.CharField(
+                help_text="Тэги для группирования рецептов",
+                max_length=32,
+                verbose_name="Name",
+            ),
         ),
     ]
