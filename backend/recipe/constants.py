@@ -1,0 +1,7 @@
+RECIPE_NAME_LENGTH = 256
+
+# Константы для скачивания списка ингредиентов в PDF
+COORDINAT_X_TITLE = 100
+COORDINAT_Y_TITLE = 800
+COORDINAT_X_ROW = 50
+COORDINAT_Y_ROW = 750
