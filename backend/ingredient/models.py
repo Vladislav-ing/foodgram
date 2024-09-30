@@ -17,13 +17,14 @@ class Tag(models.Model):
         help_text="Slug тэга", max_length=TAG_LENGTH
     )
 
-    def __str__(self):
-        return self.slug
-
     class Meta:
+        ordering = ('name',)
         verbose_name = "Tag"
         verbose_name_plural = "Tags"
         ordering = ("slug",)
+
+    def __str__(self):
+        return self.slug
 
 
 class Ingredient(models.Model):
@@ -40,10 +41,11 @@ class Ingredient(models.Model):
         max_length=INGREDIENT_MEASURE_LENGTH,
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
+        ordering = ('name',)
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
         ordering = ("name",)
+
+    def __str__(self):
+        return self.name

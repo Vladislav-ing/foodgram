@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
 
 from ingredient.models import Tag
@@ -5,6 +6,7 @@ from ingredient.serializers import ReadOnlyTagSerializer
 from registration.serializers import FullProfileSerializer
 from registration.utils import Base64ImageField
 
+from . import constants
 from .mixins import (Favorit_ShoppingCart_Save_MethodsMixin,
                      RecipeValidationMixin, RolledUpRecipeSerializer,
                      ValidateIDMixin)
@@ -21,11 +23,16 @@ class IngredientSerializerForRecipe(
     measurement_unit = serializers.CharField(
         source="ingredient.measurement_unit", read_only=True
     )
+    amount = serializers.IntegerField(
+        validators=[
+            MinValueValidator(constants.MIN_WEIGHT),
+            MaxValueValidator(constants.MAX_WEIGHT)
+        ]
+    )
 
     class Meta:
         model = RecipeIngredient
         fields = ("id", "name", "measurement_unit", "amount")
-        extra_kwargs = {"amount": {"coerce_to_string": False}}
 
     def to_representation(self, instance):
         """
@@ -48,7 +55,7 @@ class TagListSerializer(serializers.ListField):
         return ReadOnlyTagSerializer(data.all(), many=True).data
 
 
-class CRUD_RecipeSerializer(
+class CRUDRecipeSerializer(
     RecipeValidationMixin,
     Favorit_ShoppingCart_Save_MethodsMixin,
     serializers.ModelSerializer,
@@ -64,6 +71,13 @@ class CRUD_RecipeSerializer(
     image = Base64ImageField(required=True)
     author = FullProfileSerializer(
         read_only=True,
+    )
+    cooking_time = serializers.IntegerField(
+        required=True,
+        validators=[
+            MinValueValidator(constants.MIN_COOKING_TIME),
+            MaxValueValidator(constants.MAX_COOKING_TIME)
+        ]
     )
 
     class Meta:

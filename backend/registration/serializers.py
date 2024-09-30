@@ -78,7 +78,7 @@ class FullProfileSerializer(CreateProfileSerializer):
         Метод проверяющий подписку пользователя сделавшего запрос, на
         пользователя в качестве obj.
         """
-        current_user = self.context.get("request").user
+        current_user = self.context["request"].user
         if (
             current_user.is_authenticated
             and current_user.subscription.all()

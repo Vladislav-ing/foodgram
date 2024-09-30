@@ -18,15 +18,15 @@ from .filters import RecipeFilter
 from .mixins import delete_file
 from .models import Basket, Favorite, Recipe
 from .permissions import ReadOnlyOrAuthorOrAdmin
-from .serializers import (BasketRecipeSerializer, CRUD_RecipeSerializer,
+from .serializers import (BasketRecipeSerializer, CRUDRecipeSerializer,
                           FavoriteRecipeSerializer)
 
 
-class CRUD_RecipeViewSet(viewsets.ModelViewSet):
+class CRUDRecipeViewSet(viewsets.ModelViewSet):
     """CRUD вьюсет для обработки запросов к recipe/"""
 
     queryset = Recipe.objects.all()
-    serializer_class = CRUD_RecipeSerializer
+    serializer_class = CRUDRecipeSerializer
     permission_classes = (ReadOnlyOrAuthorOrAdmin,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -144,17 +144,17 @@ class CRUD_RecipeViewSet(viewsets.ModelViewSet):
             'attachment; filename="shopping_cart.pdf"'
         )
 
-        p = canvas.Canvas(response, pagesize=A4)
+        page = canvas.Canvas(response, pagesize=A4)
 
         pdfmetrics.registerFont(TTFont("FreeSerif", "FreeSerif.ttf"))
-        p.setFont("FreeSerif", 16)
-        p.drawString(
+        page.setFont("FreeSerif", constants.HEADER_SIZE)
+        page.drawString(
             constants.COORDINAT_X_TITLE,
             constants.COORDINAT_Y_TITLE,
             f"""Корзина покупок ингредиентов,
             пользователя {request.user.username}""",
         )
-        p.setFont("FreeSerif", 12)
+        page.setFont("FreeSerif", constants.ROW_SIZE)
 
         ingredients_with_weight = {}
 
@@ -171,17 +171,17 @@ class CRUD_RecipeViewSet(viewsets.ModelViewSet):
 
         x_row, y_row = constants.COORDINAT_X_ROW, constants.COORDINAT_Y_ROW
         for name_measure, total_amount in ingredients_with_weight.items():
-            p.drawString(x_row, y_row, f"* {name_measure} - {total_amount}")
-            y_row -= 20
+            page.drawString(x_row, y_row, f"* {name_measure} - {total_amount}")
+            y_row -= constants.LINE_INDENTATION
 
-            if y_row <= 50:
-                p.showPage()
-                p.setFont("FreeSerif", 12)
+            if y_row <= constants.PAGE_MISSING:
+                page.showPage()
+                page.setFont("FreeSerif", constants.ROW_SIZE)
                 y_row = (
                     constants.COORDINAT_Y_TITLE - constants.COORDINAT_Y_ROW
                 ) + constants.COORDINAT_Y_ROW
 
-        p.showPage()
-        p.save()
+        page.showPage()
+        page.save()
 
         return response

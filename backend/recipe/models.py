@@ -5,7 +5,7 @@ from django.urls import reverse
 from ingredient.models import Ingredient, Tag
 from registration.models import BaseUser
 
-from .constants import RECIPE_NAME_LENGTH
+from . import constants
 
 
 class Favorite(models.Model):
@@ -24,10 +24,8 @@ class Favorite(models.Model):
         related_name="recipe_users",
     )
 
-    def __str__(self):
-        return f"{self.user.username} добавлен - {self.recipe.name}"
-
     class Meta:
+        ordering = ('user', )
         verbose_name = "Избранный рецепт"
         verbose_name_plural = "Избранные рецепты"
         constraints = [
@@ -35,6 +33,9 @@ class Favorite(models.Model):
                 fields=["recipe", "user"], name="unique_user_recipe_favorite"
             )
         ]
+
+    def __str__(self):
+        return f"{self.user.username} добавлен - {self.recipe.name}"
 
 
 class Basket(models.Model):
@@ -53,10 +54,8 @@ class Basket(models.Model):
         related_name="purchasing_users",
     )
 
-    def __str__(self):
-        return f"{self.user.username}: {self.recipe.name}"
-
     class Meta:
+        ordering = ('user', )
         verbose_name = "Рецепт в корзине"
         verbose_name_plural = "Рецепты в корзине"
         constraints = [
@@ -64,6 +63,9 @@ class Basket(models.Model):
                 fields=["recipe", "user"], name="unique_user_recipe_basket"
             )
         ]
+
+    def __str__(self):
+        return f"{self.user.username}: {self.recipe.name}"
 
 
 class RecipeIngredient(models.Model):
@@ -81,19 +83,18 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name="recipes",
     )
-    amount = models.DecimalField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name="Amount",
         help_text="Количество/Вес для ингредиентов",
-        max_digits=8,
-        decimal_places=2,
         default=1,
-        validators=[validators.MinValueValidator(1)],
+        validators=[
+            validators.MinValueValidator(constants.MIN_WEIGHT),
+            validators.MaxValueValidator(constants.MAX_WEIGHT)
+        ],
     )
 
-    def __str__(self):
-        return f"{self.recipe.name}: {self.ingredient.name}"
-
     class Meta:
+        ordering = ('recipe', )
         verbose_name = "Ингредиент в рецепте"
         verbose_name_plural = "Ингредиенты в рецепте"
         constraints = [
@@ -102,6 +103,9 @@ class RecipeIngredient(models.Model):
                 name="unique_recipe_ingredient"
             )
         ]
+
+    def __str__(self):
+        return f"{self.recipe.name}: {self.ingredient.name}"
 
 
 class RecipeTag(models.Model):
@@ -120,10 +124,8 @@ class RecipeTag(models.Model):
         related_name="tag_recipes",
     )
 
-    def __str__(self):
-        return f"{self.recipe.name}: {self.tag.name}"
-
     class Meta:
+        ordering = ('recipe', )
         verbose_name = "Тэги связанные с рецептом"
         verbose_name_plural = "Тэги связанные с рецептами"
         constraints = [
@@ -133,6 +135,9 @@ class RecipeTag(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f"{self.recipe.name}: {self.tag.name}"
+
 
 class Recipe(models.Model):
     """Модель рецептов"""
@@ -140,7 +145,7 @@ class Recipe(models.Model):
     name = models.CharField(
         verbose_name="Название рецепта",
         help_text="Максимальная длинна 256 символов",
-        max_length=RECIPE_NAME_LENGTH,
+        max_length=constants.RECIPE_NAME_LENGTH,
     )
     ingredients = models.ManyToManyField(
         to=Ingredient,
@@ -156,7 +161,10 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name="Cooking time",
         help_text="время приготовления(в минутах)",
-        validators=[validators.MinValueValidator(1)],
+        validators=[
+            validators.MinValueValidator(constants.MIN_COOKING_TIME),
+            validators.MaxValueValidator(constants.MAX_COOKING_TIME)
+        ],
     )
     image = models.ImageField(
         help_text="Картинка рецепта, закодированная в Base64",
@@ -183,10 +191,10 @@ class Recipe(models.Model):
     def get_absolute_url(self):
         return reverse("recipe-detail", kwargs={"pk": self.pk})
 
-    def __str__(self):
-        return f"{self.name}"
-
     class Meta:
         ordering = ("-pub_date",)
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
+
+    def __str__(self):
+        return f"{self.name}"
