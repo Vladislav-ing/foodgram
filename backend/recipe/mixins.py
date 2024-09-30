@@ -10,20 +10,13 @@ from .models import Basket, Favorite, Recipe, RecipeIngredient, RecipeTag
 
 # Вынос валидаторов, используемых в проекте.
 class ValidateIDMixin:
-    """Миксин для проверки существования объекта по ID"""
+    """Миксин для проверки существования объекта ингредиента по ID"""
 
     def validate_id(self, value):
         model = self.Meta.model
-        if model == RecipeIngredient:
-            if not Ingredient.objects.filter(id=value).exists():
-                raise serializers.ValidationError(
-                    f"Ingredient with ID {value} - does not exist."
-                )
-            return value
-
-        if not model.objects.filter(id=value).exists():
+        if not Ingredient.objects.filter(id=value).exists():
             raise serializers.ValidationError(
-                f"{model.__name__} with ID {value} - does not exist."
+                f"Model {model} with ID {value} - does not exist."
             )
         return value
 
@@ -31,54 +24,39 @@ class ValidateIDMixin:
 class RecipeValidationMixin:
     """Миксин для валидации тегов и ингредиентов в рецептах."""
 
-    def validate_tags(self, value):
+    def _validate_unique_items(self, value, item_type):
+        """Общий метод для валидации на наличие и дубликаты."""
         if not value:
             raise serializers.ValidationError(
-                "Поле 'tags' не может быть пустым."
+                f"Поле '{item_type}' не может быть пустым."
             )
 
-        tag_ids = [tag.id for tag in value]
-        tag_counts = Counter(tag_ids)
+        item_ids = (
+            [item.id for item in value]
+            if item_type == "tags"
+            else [item.get('id') for item in value]
+        )
+        item_counts = Counter(item_ids)
 
-        # Находим теги, которые повторяются
-        duplicate_tags = [
-            tag_id for tag_id, count in
-            tag_counts.items() if count > 1
+        duplicate_items = [
+            item_id for item_id, count in item_counts.items() if count > 1
         ]
 
-        if duplicate_tags:
+        if duplicate_items:
             raise serializers.ValidationError(
-                {"tags": f"""Обнаружены повторяющиеся
-                 id тегов: {duplicate_tags}"""}
+                {item_type: f"""Обнаружены повторяющиеся id {item_type}:
+                 {duplicate_items}"""}
             )
 
         return value
+
+    def validate_tags(self, value):
+        """Валидация тегов."""
+        return self._validate_unique_items(value, "tags")
 
     def validate_ingredients(self, value):
-        if not value:
-            raise serializers.ValidationError(
-                "Поле 'ingredients' не может быть пустым."
-            )
-
-        ingredient_ids = [ingredient["id"] for ingredient in value]
-        ingredient_counts = Counter(ingredient_ids)
-
-        # Находим ингредиенты, которые повторяются
-        duplicate_ingredients = [
-            ingredient_id
-            for ingredient_id, count in ingredient_counts.items()
-            if count > 1
-        ]
-
-        if duplicate_ingredients:
-            raise serializers.ValidationError(
-                {
-                    "ingredients": f"""Обнаружены повторяющиеся
-                    id ингредиентов: {duplicate_ingredients}"""
-                }
-            )
-
-        return value
+        """Валидация ингредиентов."""
+        return self._validate_unique_items(value, "ingredients")
 
 
 # Вынос методов, используемых в проекте.
