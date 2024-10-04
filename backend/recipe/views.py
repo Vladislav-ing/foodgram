@@ -49,6 +49,7 @@ class CRUDRecipeViewSet(viewsets.ModelViewSet):
 
         url = short_url.encode_url(recipe.id)
         full_url = request.build_absolute_uri(recipe.get_absolute_url())
+        full_url = '/'.join(full_url.split('/')[:-2])
         short_link = f"{full_url}/{url}"
 
         return Response({"short-link": short_link}, status=status.HTTP_200_OK)

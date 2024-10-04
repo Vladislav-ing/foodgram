@@ -1,0 +1,36 @@
+volumes:
+  pg_data:
+  static:
+  media_users:
+  media_recipes:
+  docs:
+
+services:
+  db:
+    env_file: .env
+    image: postgres:13
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  backend:
+    env_file: .env
+    build: ./backend/
+    volumes:
+      - static:/backend_static
+      - docs:/app/docs
+      - media_users:/app/media/users
+      - media_recipes:/app/media/recipes/images
+  frontend:
+    env_file: .env
+    build: ./frontend/
+    volumes:
+      - static:/app/result_build/
+  gateway:
+    env_file: .env
+    build: ./gateway/
+    ports:
+      - 7000:80
+    volumes:
+      - static:/static
+      - docs:/static/docs
+      - media_users:/media/users
+      - media_recipes:/media/recipes/images

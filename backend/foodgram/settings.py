@@ -9,9 +9,9 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("MODE") == 'True'
+DEBUG = os.getenv("MODE") == 'False'
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 SECRET_KEY = (
     os.getenv("SECRET_KEY")
@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework.authtoken",
     "rest_framework",
-    "corsheaders",
     "djoser",
     "django_extensions",
     "django_filters",
@@ -44,7 +43,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -72,20 +70,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "foodgram.wsgi.application"
 
-
-# CORS_setting
-CORS_URLS_REGEX = r"^/api/.*$"
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
+        'USER': os.getenv('POSTGRES_USER', 'vlad'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'gareri'),
+        'HOST': os.getenv('DB_HOST', 'foodgram-db'),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
@@ -135,6 +130,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
+
+STATIC_ROOT = BASE_DIR / 'collected_static'
 
 MEDIA_URL = "/media/"
 

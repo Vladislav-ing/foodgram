@@ -4,8 +4,7 @@ from django.core.files.storage import default_storage
 from rest_framework import serializers
 
 from ingredient.models import Ingredient
-
-from .models import Basket, Favorite, Recipe, RecipeIngredient, RecipeTag
+from recipe.models import Recipe, RecipeIngredient, RecipeTag
 
 
 # Вынос валидаторов, используемых в проекте.
@@ -63,17 +62,17 @@ class RecipeValidationMixin:
 class Favorit_ShoppingCart_Save_MethodsMixin:
     def get_is_favorited(self, obj):
         return (
-            not self.context.get("request").user.is_anonymous
-            and Favorite.objects.filter(
-                user=self.context["request"].user, recipe=obj
+            not self.context["request"].user.is_anonymous
+            and obj.recipe_users.filter(
+                user=self.context["request"].user
             ).exists()
         )
 
     def get_is_in_shopping_cart(self, obj):
         return (
-            not self.context.get("request").user.is_anonymous
-            and Basket.objects.filter(
-                user=self.context["request"].user, recipe=obj
+            not self.context["request"].user.is_anonymous
+            and obj.purchasing_users.filter(
+                user=self.context["request"].user
             ).exists()
         )
 
