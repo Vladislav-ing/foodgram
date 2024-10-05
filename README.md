@@ -100,6 +100,11 @@ sudo docker compose -f имя_фала_compose.yml exec backend cp -r /app/colle
 ## Дополнительно:
 При выполнении git-push(MAIN/MASTER branch) в репозиторий проекта, выполняется workflow согласно условиям on, и задачам из jobs.
 
+## API и [документация](https://foodgram-free.sytes.net/docs/)
+```
+https://domain/docs/
+```
+
 ## Доступы
 1. Уровень пользователя.
 2. Уровень администратора. 
