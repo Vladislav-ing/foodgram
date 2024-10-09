@@ -19,6 +19,11 @@ SECRET_KEY = (
     else "django-insecure-t$nq3e$y_!id2s^qzxovg*3)ntlzq@n*lzv(ld4(1io9az$f=s"
 )
 
+# CSRF settings
+
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE') == 'True'
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
+
 # Application definition
 
 INSTALLED_APPS = [
